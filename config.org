@@ -1,0 +1,183 @@
+#+TITLE: Mike's EMACS Config
+#+AUTHOR: me with help of Derek Taylor
+
+* PACKAGE MANAGEMENT
+ ** Setup package.el to work with MELPA.
+#+begin_src emacs-lisp
+   (require 'package)
+   (add-to-list 'package-archives
+             '("melpa" . "https://melpa.org/packages/"))
+   (package-refresh-contents)
+   (package-initialize)
+#+end_src
+
+** Installing use-package
+#+begin_src emacs-lisp
+   (unless (package-installed-p 'use-package)
+      (package-install 'use-package))
+#+end_src
+
+* ICONS
+  M-x all-the-icons-install-fonts needs to be run...
+#+begin_src emacs-lisp
+(use-package all-the-icons
+   :ensure t
+   :init
+   (unless (member "all-the-icons" (font-family-list))
+   (all-the-icons-install-fonts t)))
+#+end_src
+* GENERAL KEYBINDINGS
+#+begin_src emacs-lisp
+(use-package general
+   :ensure t
+   :config
+    (general-evil-setup t))
+    
+    (nvmap :prefix "SPC"
+    "SPC"   '(counsel-M-x :which-key "M-x")
+    "."     '(find-file  :which-key "Find file")
+    ;; Buffers
+    "b b"   '(ibuffer              :which-key "Ibuffer")
+    "b k"   '(kill-current-buffer  :which-key "Kill current buffer")
+    "b n"   '(next-buffer          :which-key "Next buffer")
+    "b p"   '(previous-buffer      :which-key "previous buffer")
+    "b B"   '(ibuffer-list-buffers :which-key "Ibuffer list buffers")
+    "b K"   '(kill-buffer          :which-key "kill buffer")
+    ;; Eshell
+    "e h"   '(counsel-esh-history  :which-key "Eshell History")
+    "e s"   '(eshell               :which-key "Eshell")
+    "f r"   '(consel-recentf       :which-key "Recent files")
+    "t t"   '(toggle-truncate-lines :which-key "Toggle Truncate Lines")
+    "h r r" '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :which-key "Reload emacs config")
+    ;; Window Splits
+    "w c"   '(evil-window-delete :which-key "Close window")
+    "w n"   '(evil-window-new    :which-key "New window")
+    "w s"   '(evil-window-split  :which-key "Horizontal split window")
+    "w v"   '(evil-window-vsplit :which-key "Virtical split window")
+    ;; Window Motions
+    "w h"   '(evil-window-left  :which-key "window left")
+    "w j"   '(evil-window-down  :which-key "window down")
+    "w k"   '(evil-window-up    :which-key "window up")
+    "w l"   '(evil-window-right :which-key "window right")
+    "w w"   '(evil-window-next  :which-key "goto next window")
+    ;; Misc
+    "t b"   '(tool-bar-mode     :which-key "toggles tool-bar")
+    "m b"   '(menu-bar-mode     :which-key "toggles menu-bar")
+    )
+
+#+end_src
+
+* EVIL MODE
+#+begin_src emacs-lisp
+(use-package evil
+  :ensure t ;; install evil if not installed
+  :init     ;; tweak evil's configuration before loading it
+  (setq evil-want-integration t) ;; This is optional (t on by default)
+  (setq evil-want-keybinding nil)
+  (setq evil-vsplit-window-right t)
+  (setq evil-split-window-below t)
+  (evil-mode)
+)
+(use-package evil-collection
+  :after evil
+  :ensure t
+  :config
+  (evil-collection-init))
+#+end_src
+
+* FONTS
+#+begin_src emacs-lisp
+(set-face-attribute 'default nil
+     :font "SauceCodePro Nerd Font 11"
+     :weight 'medium)
+(set-face-attribute 'variable-pitch nil
+     :font "Ubuntu Nerd Font 11"
+     :weight 'medium)
+(set-face-attribute 'fixed-pitch nil
+     :font "SauceCodePro Nerd Font 11"
+     :weight 'medium)
+;;(setq-default line-spacing 0.10)
+(add-to-list 'default-frame-alist '(font ."SauceCodePro Nerd Font 11"))
+#+end_src
+
+* ZOOM IN AND OUT
+You can use the bindings CTRL plus =/- for zooming in/out.
+You can also use CTRL plus the mouse 
+#+begin_src emacs-lisp
+;; zoom in/out like we do everywhere else.
+(global-set-key (kbd "C-=") 'text-scale-increase)
+(global-set-key (kbd "C--") 'text-scale-decrease)
+(global-set-key (kbd "C-0")'(lambda () (interactive) (text-scale-adjust 0)))
+(global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
+(global-set-key (kbd "<C-wheel-up>")   'text-scale-increase)
+#+end_src
+
+* GRAPHICAL USER INTERFACE SETTINGS
+#+begin_src emacs-lisp
+(menu-bar-mode -1)   ;; turn off menubar
+(tool-bar-mode -1)   ;; turn off tool mode
+(scroll-bar-mode -1)
+#+end_src
+
+* THEMES
+#+begin_src emacs-lisp
+  (use-package doom-themes
+     :ensure t)
+  (setq doom-themes-enabled-bold t    ; if nil, bold is universally disabled
+        doom-themes-enable-italic t)  ; if nill, italics is universally disabled
+  (load-theme 'doom-one t) 
+#+end_src
+* MODE LINE
+#+begin_src emacs-lisp
+(use-package doom-modeline
+   :ensure t)
+(doom-modeline-mode 1)
+#+end_src
+* WHICH_KEY
+#+begin_src emacs-lisp
+(use-package which-key
+    :ensure t)
+(which-key-mode)
+
+#+end_src
+* nlinum  && truncate lines
+  line numbers in the margin
+#+begin_src emacs-lisp
+  (use-package nlinum
+     :ensure t)
+  (global-nlinum-mode)
+;;  (global-visual-line-mode nil)
+#+end_src
+* PROJECTILE
+#+begin_src emacs-lisp
+(use-package projectile
+   :ensure t
+   :config
+   (projectile-global-mode 1))
+#+end_src
+* DASHBOARD
+  Emacs Dashboard is an extensible startup screen showing 
+  recent files, bookmarks, agenda items and an
+  Emacs banner
+#+begin_src emacs-lisp
+(use-package dashboard
+     :ensure t
+     :init  
+      (setq dashboard-set-headings-icons t)
+       (setq dashboard-set-file-icons t)
+       (setq dashboard-banner-logo-title "Emacs is Life!")
+       (setq dashboard-startup-banner 'logo) ;; use standard emacs logo as banner
+       ;;(setq dashboard-startup-banner "~/.emacs.d/emacs.png");;use custom banner
+       (setq dashboard-center-content t) ;; set to 't' for centered content
+       (setq dashboard-items '((recents . 10)
+                             ;;  (agenda . 5)
+                             ;;  (bookmarks . 5)
+                             ;;  (projects . 5)
+                             ;;  (registers . 5)
+                              ))	       
+     :config
+      (dashboard-setup-startup-hook)
+      (dashboard-modify-heading-icons '((recents . "file-text")
+                                        (bookmarks . "book")))     
+)
+#+end_src
