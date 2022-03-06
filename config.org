@@ -1,5 +1,5 @@
 #+TITLE: Mike's EMACS Config
-#+AUTHOR: me with help of Derek Taylor
+#+AUTHOR: Me with help of Derek Taylor
 
 * PACKAGE MANAGEMENT
 ** Setup package.el to work with MELPA.
